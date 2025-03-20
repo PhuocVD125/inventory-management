@@ -1,4 +1,7 @@
 package com.osp.inventory_management.repository;
 
-public interface CategoryRepository {
+import com.osp.inventory_management.entity.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoryRepository extends JpaRepository<Category, Long> {
 }
