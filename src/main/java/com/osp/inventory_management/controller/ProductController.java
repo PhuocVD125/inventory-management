@@ -27,34 +27,26 @@ public class ProductController {
         return new ResponseEntity<>(productService.createProduct(productDTO), HttpStatus.CREATED);
     }
 
-    // get product by id`
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
-    }
-
-    // get all products by category
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductDTO>> getAllProductsByCategory(@PathVariable Long categoryId) {
-        return new ResponseEntity<>(productService.getAllProductsByCategory(categoryId), HttpStatus.OK);
-    }
-
-    // get all products
+    // get all products in the system
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
+    // get products by hashid
+    @GetMapping("/details/{hashedId}")
+    public ResponseEntity<ProductDTO> getProductDetails(@PathVariable String hashedId) {
+        return ResponseEntity.ok(productService.getProductByHashedId(hashedId));
     }
 
-    //update
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductDTO productDTO) {
-        return new ResponseEntity<>(productService.updateProduct(id, productDTO), HttpStatus.OK);
+    // update product by hashid
+    @PutMapping("/{hashedId}")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable String hashedId, @Valid @RequestBody ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.updateProduct(hashedId, productDTO));
     }
-
-    //delete product
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    // delete product by hashid
+    @DeleteMapping("/{hashedId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable String hashedId) {
+        productService.deleteProduct(hashedId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,14 +1,14 @@
 package com.osp.inventory_management.service;
 
 import com.osp.inventory_management.payload.ProductDTO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface ProductService {
     ProductDTO createProduct(ProductDTO productDTO);
-    ProductDTO updateProduct(Long id, ProductDTO productDTO);
-    void deleteProduct(Long id);
-    ProductDTO getProductById(Long id);
-    List<ProductDTO> getAllProductsByCategory(Long categoryId);
+    ProductDTO updateProduct(String hashedId, ProductDTO productDTO);
+    void deleteProduct(String hashedId);
     List<ProductDTO> getAllProducts();
+    ProductDTO getProductByHashedId(String hashedId);
 }

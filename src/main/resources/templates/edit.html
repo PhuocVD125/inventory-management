@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Product</title>
+    <title>Edit Product</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="container mt-4">
-<h2>Create New Product</h2>
+<h2>Edit Product</h2>
 
-<form id="createForm">
+<form id="editForm">
+    <input type="hidden" id="productId">
     <div class="mb-3">
         <label>Name</label>
         <input type="text" class="form-control" id="name" required>
@@ -28,15 +29,32 @@
         <label>Category ID</label>
         <input type="number" class="form-control" id="categoryId" required>
     </div>
-    <button type="submit" class="btn btn-success">Create</button>
+    <button type="submit" class="btn btn-primary">Update</button>
     <a href="/products" class="btn btn-secondary">Cancel</a>
 </form>
 
 <script>
-    document.getElementById("createForm").addEventListener("submit", function(event) {
+    const productId = window.location.pathname.split("/").pop();
+
+    // Gọi API lấy thông tin sản phẩm để đổ vào form
+    fetch(`/api/products/${productId}`)
+        .then(res => res.json())
+        .then(product => {
+            document.getElementById("productId").value = product.id;
+            document.getElementById("name").value = product.name;
+            document.getElementById("price").value = product.price;
+            document.getElementById("description").value = product.description;
+            document.getElementById("location").value = product.location;
+            document.getElementById("categoryId").value = product.categoryId;
+        })
+        .catch(error => console.error("Error fetching product:", error));
+
+    // Gọi API để cập nhật sản phẩm
+    document.getElementById("editForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
-        const product = {
+        const updatedProduct = {
+            id: document.getElementById("productId").value,
             name: document.getElementById("name").value,
             price: document.getElementById("price").value,
             description: document.getElementById("description").value,
@@ -44,20 +62,20 @@
             categoryId: document.getElementById("categoryId").value
         };
 
-        fetch("/api/products", {
-            method: "POST",
+        fetch(`/api/products/${productId}`, {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(product)
+            body: JSON.stringify(updatedProduct)
         })
         .then(res => {
             if (res.ok) {
-                alert("Product created successfully!");
+                alert("Product updated successfully!");
                 window.location.href = "/products";
             } else {
-                alert("Failed to create product.");
+                alert("Failed to update product.");
             }
         })
-        .catch(error => console.error("Error creating product:", error));
+        .catch(error => console.error("Error updating product:", error));
     });
 </script>
 </body>
