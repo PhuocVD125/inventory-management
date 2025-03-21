@@ -11,4 +11,5 @@ public interface ProductService {
     void deleteProduct(String hashedId);
     List<ProductDTO> getAllProducts();
     ProductDTO getProductByHashedId(String hashedId);
+    List<ProductDTO> getProductByName(String name);
 }

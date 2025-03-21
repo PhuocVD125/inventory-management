@@ -6,7 +6,7 @@
 </head>
 <body class="container mt-4">
 
-<h2>Product List (API Fetch)</h2>
+<h2>Product List</h2>
 
 <a href="/products/create" class="btn btn-primary mb-3">+ Add New Product</a>
 
@@ -17,6 +17,16 @@
         <input type="text" class="form-control" id="searchInput" placeholder="Enter hashed ID...">
         <button class="btn btn-outline-secondary" id="searchBtn">Search</button>
         <button class="btn btn-outline-dark" id="resetBtn">Reset</button>
+    </div>
+</div>
+
+<!-- Search by name -->
+<div class="mb-3">
+    <label for="searchInput" class="form-label">Search Product by Name </label>
+    <div class="input-group">
+        <input type="text" class="form-control" id="searchInput2" placeholder="Enter name...">
+        <button class="btn btn-outline-secondary" id="searchBtn2">Search</button>
+        <button class="btn btn-outline-dark" id="resetBtn2">Reset</button>
     </div>
 </div>
 
@@ -104,6 +114,24 @@
 
             const product = await res.json();
             renderProducts([product]);
+        } catch (err) {
+            console.error("Search error:", err);
+            alert("Product not found.");
+        }
+    });
+
+
+     // Search by Name
+    document.getElementById("searchBtn2").addEventListener("click", async () => {
+        const name = document.getElementById("searchInput2").value.trim();
+        if (!name) return alert("Please enter product name.");
+
+        try {
+            const res = await fetch(`/api/products/details/name/${name}`);
+            if (!res.ok) throw new Error("Product not found");
+
+            const product = await res.json();
+            renderProducts(product);
         } catch (err) {
             console.error("Search error:", err);
             alert("Product not found.");

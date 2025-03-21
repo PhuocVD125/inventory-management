@@ -38,6 +38,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductByHashedId(hashedId));
     }
 
+    // get products by name
+    @GetMapping("/details/name/{name}")
+    public ResponseEntity<List<ProductDTO>> getProductDetailsByName(@PathVariable String name) {
+        return ResponseEntity.ok(productService.getProductByName(name));
+    }
+
+
     // update product by hashid
     @PutMapping("/{hashedId}")
     public ResponseEntity<ProductDTO> updateProduct(@PathVariable String hashedId, @Valid @RequestBody ProductDTO productDTO) {

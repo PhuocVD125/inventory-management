@@ -120,6 +120,21 @@ public class ProductServiceImpl implements ProductService {
                 product.getCategory().getId()
         );
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getProductByName(String productName) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(productName);
+        return (List<ProductDTO>) products.stream()
+                .map(product -> new ProductDTO(
+                        encodeId(product.getId()), // Mã hóa ID
+                        product.getName(),
+                        product.getPrice(),
+                        product.getDescription(),
+                        product.getLocation(),
+                        product.getCategory().getId()
+                ))
+                .collect(Collectors.toList());
+    }
 
     private Long decodeId(String hashedId) {
         // Đoạn này có thể được thay thế bằng mapping stored hash-ID nếu muốn tăng bảo mật
