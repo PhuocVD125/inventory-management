@@ -1,4 +1,5 @@
 package com.osp.inventory_management.service.impl;
+
 import com.osp.inventory_management.entity.Category;
 import com.osp.inventory_management.entity.Product;
 import com.osp.inventory_management.payload.ProductDTO;
@@ -6,15 +7,18 @@ import com.osp.inventory_management.repository.CategoryRepository;
 import com.osp.inventory_management.repository.ProductRepository;
 import com.osp.inventory_management.service.ProductService;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class ProductServiceImpl implements ProductService {
 
-    private ModelMapper mapper;
-    private ProductRepository productRepository;
-    private CategoryRepository categoryRepository;
+    private final ModelMapper mapper;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     public ProductServiceImpl(ModelMapper mapper, ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.mapper = mapper;
@@ -23,42 +27,45 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
         Category category = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        // convert DTO to entity
-        Product product = mapToEntity(productDTO);
-        product.setCategory(category);
-        // save and return DTO
-        return mapToDto(productRepository.save(product));
-    }
-
-    private ProductDTO mapToDto(Product save) {
-        ProductDTO productDTO = mapper.map(save, ProductDTO.class);
-        return productDTO;
-    }
-
-    private Product mapToEntity(ProductDTO productDTO) {
         Product product = mapper.map(productDTO, Product.class);
-        return product;
-    }
 
+
+        product.setId(null); // đảm bảo là tạo mới
+        product.setCategory(category);
+
+        Product savedProduct = productRepository.save(product);
+
+        return mapper.map(savedProduct, ProductDTO.class);
+    }
 
     @Override
+    @Transactional
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        Product product = productRepository.findById(id)
+        Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // convert DTO to entity
-        Product updatedProduct = mapToEntity(productDTO);
-        updatedProduct.setId(id);
+        // Chỉ cập nhật các thuộc tính thay vì tạo object mới
+        existingProduct.setName(productDTO.getName());
+        existingProduct.setDescription(productDTO.getDescription());
+        existingProduct.setPrice(productDTO.getPrice());
 
-        // save and return DTO
-        return mapToDto(productRepository.save(updatedProduct));
+        if (productDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(productDTO.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            existingProduct.setCategory(category);
+        }
+
+        Product updatedProduct = productRepository.saveAndFlush(existingProduct);
+        return mapper.map(updatedProduct, ProductDTO.class);
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -67,24 +74,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ProductDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        return mapToDto(product);
+        return mapper.map(product, ProductDTO.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductDTO> getAllProductsByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        List<Product> products = productRepository.findByCategory(categoryId);
-        return products.stream().map((product) -> mapToDto(product)).collect(Collectors.toList());
+
+        List<Product> products = productRepository.findByCategory(category);
+        return products.stream()
+                .map(product -> mapper.map(product, ProductDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductDTO> getAllProducts() {
         List<Product> products = productRepository.findAll();
-        return products.stream().map((product) -> mapToDto(product)).collect(Collectors.toList());
+        return products.stream()
+                .map(product -> mapper.map(product, ProductDTO.class))
+                .collect(Collectors.toList());
     }
 }

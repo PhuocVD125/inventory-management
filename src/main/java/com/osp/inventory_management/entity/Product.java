@@ -27,8 +27,6 @@ public class Product {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "location", nullable = false)
     private String location;
 
     @ManyToOne(fetch = FetchType.LAZY)
