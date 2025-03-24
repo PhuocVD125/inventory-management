@@ -30,8 +30,8 @@ public class PurchaseOrder {
     private User approvedBy;
 
 
-    @Column(name = "order_date", nullable = false)
-    private LocalDateTime orderDate;
+//    @Column(name = "order_date", nullable = false)
+//    private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
@@ -45,10 +45,10 @@ public class PurchaseOrder {
     @JsonIgnore
     private List<PurchaseOrderDetail> details;
 
-    @PrePersist
-    protected void onCreate() {
-        if (orderDate == null) {
-            orderDate = LocalDateTime.now();
-        }
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        if (orderDate == null) {
+//            orderDate = LocalDateTime.now();
+//        }
+//    }
 }

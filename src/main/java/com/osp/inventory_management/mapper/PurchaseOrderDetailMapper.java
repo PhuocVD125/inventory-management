@@ -16,8 +16,8 @@ public class PurchaseOrderDetailMapper {
                 entity.getId(),
                 purchaseOrderId,
                 productId,
-                entity.getQuantity(),
-                entity.getReceivedDate()
+                entity.getQuantity()
+//                entity.getReceivedDate()
         );
     }
 
@@ -27,7 +27,7 @@ public class PurchaseOrderDetailMapper {
         detail.setPurchaseOrder(order);
         detail.setProduct(product);
         detail.setQuantity(dto.getQuantity());
-        detail.setReceivedDate(dto.getReceivedDate());
+//        detail.setReceivedDate(dto.getReceivedDate());
         return detail;
     }
 }

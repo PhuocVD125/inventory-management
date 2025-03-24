@@ -7,6 +7,7 @@ import com.osp.inventory_management.model.User;
 import com.osp.inventory_management.payload.PurchaseOrderDTO;
 import com.osp.inventory_management.payload.PurchaseOrderDetailDTO;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class PurchaseOrderMapper {
         dto.setCreatedById(entity.getCreatedBy() != null ? entity.getCreatedBy().getId() : null);
         dto.setApprovedById(entity.getApprovedBy() != null ? entity.getApprovedBy().getId() : null);
 
-        dto.setOrderDate(entity.getOrderDate());
+//        dto.setOrderDate(entity.getOrderDate());
 
         dto.setStatus(entity.getStatus());
 
@@ -47,7 +48,7 @@ public class PurchaseOrderMapper {
         order.setSupplier(supplier);
         order.setCreatedBy(createdBy);
         order.setApprovedBy(approvedBy);
-        order.setOrderDate(dto.getOrderDate());
+//        order.setOrderDate(dto.getOrderDate() != null ? dto.getOrderDate() : LocalDateTime.now());
         order.setStatus(dto.getStatus());
 
         // Chi tiết đơn hàng sẽ được xử lý bên ngoài service (sau khi có product entity)

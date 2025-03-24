@@ -47,10 +47,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         User creator = userRepository.findById(orderDTO.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found ","id", orderDTO.getCreatedById()));
 
-        // Set order date nếu DTO không truyền vào
-        if (orderDTO.getOrderDate() == null) {
-            orderDTO.setOrderDate(LocalDateTime.now());
-        }
+//        // Set order date nếu DTO không truyền vào
+//        if (orderDTO.getOrderDate() == null) {
+//            orderDTO.setOrderDate(LocalDateTime.now());
+//        }
 
         PurchaseOrder order = PurchaseOrderMapper.toEntity(orderDTO, supplier, creator, null);
         order.setStatus(PurchaseOrder.OrderStatus.PENDING);
@@ -63,10 +63,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
             Product product = productRepository.findById(detailDTO.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found", "id", detailDTO.getProductId()));
 
-            // Nếu receivedDate null → set là thời điểm hiện tại
-            if (detailDTO.getReceivedDate() == null) {
-                detailDTO.setReceivedDate(LocalDateTime.now());
-            }
+//            // Nếu receivedDate null → set là thời điểm hiện tại
+//            if (detailDTO.getReceivedDate() == null) {
+//                detailDTO.setReceivedDate(LocalDateTime.now());
+//            }
 
             return PurchaseOrderDetailMapper.toEntity(detailDTO, savedOrder, product);
         }).collect(Collectors.toList());

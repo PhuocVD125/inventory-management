@@ -16,7 +16,7 @@ public class PurchaseOrderDTO {
     private Long supplierId;
     private Long createdById;
     private Long approvedById; // Có thể null nếu chưa phê duyệt
-    private LocalDateTime orderDate;
+//    private LocalDateTime orderDate;
     private PurchaseOrder.OrderStatus status;
     private List<PurchaseOrderDetailDTO> details;
 }

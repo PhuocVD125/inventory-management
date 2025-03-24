@@ -14,5 +14,5 @@ public class PurchaseOrderDetailDTO {
     private Long purchaseOrderId;
     private Long productId;
     private Integer quantity;
-    private LocalDateTime receivedDate;
+//    private LocalDateTime receivedDate;
 }

@@ -29,13 +29,13 @@ public class PurchaseOrderDetail {
     @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name = "received_date")
-    private LocalDateTime receivedDate;
+//    @Column(name = "received_date")
+//    private LocalDateTime receivedDate;
 
-    @PrePersist
-    protected void onCreate() {
-        if (receivedDate == null) {
-            receivedDate = LocalDateTime.now();
-        }
-    }
+//    @PrePersist
+//    protected void onCreate() {
+//        if (receivedDate == null) {
+//            receivedDate = LocalDateTime.now();
+//        }
+//    }
 }
