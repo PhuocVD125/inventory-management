@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            text-align: center;
+            padding: 100px;
+        }
+
+        .error-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .error-code {
+            font-size: 72px;
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .error-message {
+            font-size: 24px;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .back-btn {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #135ba1;
+        }
+    </style>
+</head>
+<body>
+<div class="error-box">
+    <div class="error-code" id="errorCode">Error</div>
+    <div class="error-message" id="errorMessage">Something went wrong!</div>
+    <a href="/home" class="back-btn">Back to Home</a>
+</div>
+
+<script>
+    // Lấy thông tin lỗi từ URL nếu được redirect kèm query
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code") || "Unknown";
+    const message = params.get("message") || "Something went wrong!";
+
+    document.getElementById("errorCode").innerText = code;
+    document.getElementById("errorMessage").innerText = message;
+</script>
+</body>
+</html>
