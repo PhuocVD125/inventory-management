@@ -46,9 +46,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
     @Override
     public PurchaseOrder createOrder(PurchaseOrderDTO orderDTO) {
+        // Kiểm tra id của nhà cung cấp và người tạo đơn hàng
         Supplier supplier = supplierRepository.findById(orderDTO.getSupplierId())
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found ", "id", orderDTO.getSupplierId()));
-
+        // kiểm tra user
         User creator = userRepository.findById(orderDTO.getCreatedById())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found ","id", orderDTO.getCreatedById()));
 

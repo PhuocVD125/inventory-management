@@ -30,19 +30,22 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account registerNewAccount(AccountRegisterRequest request) {
+        // check accountName đã tồn tại
         if (accountRepository.existsByAccountName(request.getAccountName())) {
             throw new RuntimeException("Tài khoản đã tồn tại!");
         }
 
+        // Gán role mặc định
         Role role = roleRepository.findByName(Role.RoleName.EMPLOYEE)
                 .orElseThrow(() -> new RuntimeException("Vai trò mặc định không tồn tại!"));
-
+        // Tạo account mới
         Account account = new Account();
         account.setAccountName(request.getAccountName());
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         account.setEmail(request.getEmail());
         account.setRoles(Collections.singleton(role));
 
+        // Tạo user mới
         User user = new User();
         user.setName(request.getFullName());
         user.setPhoneNumber(request.getPhone());

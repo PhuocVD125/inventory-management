@@ -11,7 +11,10 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
-
+    /*
+    Class CustomUserDetails này implements UserDetails –
+    là class tuỳ chỉnh để Spring Security sử dụng khi thực hiện xác thực người dùng (authentication).
+     */
     private final Account account;
 
     @Override

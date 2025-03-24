@@ -29,10 +29,35 @@ public class Account {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    /*
+     * One-to-One relationship with User entity.
+     * One account can have one user, and one user can have one account.
+     *
+     *  @OneToOne(mappedBy = "account")	Đánh dấu mối quan hệ 1-1 với class User,
+                                        và khóa ngoại nằm bên class User
+                                        (vì mappedBy = "account" tức User có thuộc tính account)
+
+     * cascade = CascadeType.ALL	    Khi Account bị thêm/sửa/xóa thì User tương ứng
+                                        cũng sẽ tự động được cập nhật theo
+
+     * orphanRemoval = true	        Nếu xóa user khỏi account, thì user đó cũng bị xóa trong DB
+
+     * @JoinColumn(name = "user_id",   Tạo cột user_id trong bảng accounts để ánh xạ tới id trong bảng users.
+       referencedColumnName = "id")    Nhưng do mappedBy nên phần này sẽ bị bỏ qua, hoặc có thể là thừa.
+     */
+
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+//    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+
+    /*
+    * @ManyToMany(fetch = FetchType.EAGER): Khi lấy Account, sẽ load luôn danh sách
+    *                                       Role đi kèm (có thể gây nặng nếu bảng lớn)
+    *
+    * @JoinTable(...): Tạo bảng trung gian account_roles để liên kết nhiều-nhiều
+    *
+    */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "account_roles",

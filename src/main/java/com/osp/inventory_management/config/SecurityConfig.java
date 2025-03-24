@@ -15,55 +15,66 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-@Configuration
-@EnableWebSecurity
-@RequiredArgsConstructor
+@Configuration // Đánh dấu đây là 1 class cấu hình Spring
+@EnableWebSecurity // Bật cấu hình bảo mật Spring Security
+@RequiredArgsConstructor // Tự động tạo constructor cho các trường final
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
+
     @Autowired
-    private CustomAccessDeniedHandler accessDeniedHandler;
+    private CustomAccessDeniedHandler accessDeniedHandler; // Xử lý khi người dùng truy cập không đủ quyền
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Sử dụng thuật toán mã hóa BCrypt cho mật khẩu
     }
 
-    // Cho phép sử dụng AuthenticationManager để xử lý login
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        // Cho phép sử dụng AuthenticationManager từ Spring để xử lý xác thực đăng nhập
         return config.getAuthenticationManager();
     }
 
-    // Cấu hình bảo mật
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // tắt CSRF nếu dùng REST API
-                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/manager/**").hasRole("MANAGER")       // Chỉ MANAGER
-//                        .requestMatchers("/api/employee/**").hasAnyRole("EMPLOYEE", "MANAGER") // Cả 2 đều truy cập được
-                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/purchase-orders/approve/**").hasRole("MANAGER")
-                        .requestMatchers("/purchase-orders/**", "/products/**", "/inventory/**").hasAnyRole("EMPLOYEE", "MANAGER")
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
+                .csrf(csrf -> csrf.disable()) // Tắt bảo vệ CSRF vì bạn dùng REST hoặc đơn giản hóa dev frontend
 
+                .authorizeHttpRequests(auth -> auth
+                        // Cho phép truy cập không cần đăng nhập vào trang login và thư mục static
+                        .requestMatchers("/login", "/css/**", "/js/**").permitAll()
+
+                        // Chỉ ROLE_MANAGER được phép truy cập trang phê duyệt đơn hàng
+                        .requestMatchers("/purchase-orders/approve/**").hasRole("MANAGER")
+
+                        // Cả EMPLOYEE và MANAGER đều có quyền truy cập các trang này
+                        .requestMatchers("/purchase-orders/**", "/products/**", "/inventory/**")
+                        .hasAnyRole("EMPLOYEE", "MANAGER")
+
+                        // Các API khác yêu cầu xác thực (authenticated)
+                        .requestMatchers("/api/**").authenticated()
+
+                        // Các route khác không cần bảo vệ
+                        .anyRequest().permitAll()
                 )
 
+                // Nếu truy cập bị từ chối, gọi CustomAccessDeniedHandler
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler)
                 )
 
+                // Hoặc chuyển hướng tới trang lỗi 403 tùy biến
                 .exceptionHandling(exception -> exception
-                        .accessDeniedPage("/error/403")  // Đường dẫn tới trang lỗi
+                        .accessDeniedPage("/error/403")
                 )
 
+                // Cấu hình form login mặc định
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/home", true)
-                        .failureUrl("/login?error=true")
+                        .loginPage("/login")                  // Đường dẫn trang login (GET)
+                        .loginProcessingUrl("/login")         // Endpoint xử lý form login (POST)
+                        .defaultSuccessUrl("/home", true)     // Sau login thành công thì chuyển tới /home
+                        .failureUrl("/login?error=true")      // Nếu login fail thì quay lại login và báo lỗi
                         .permitAll()
                 );
 

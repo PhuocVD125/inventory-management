@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class ProductDTO {
     private String hashedId; // Mã hóa ID để ẩn đi ID thật
 
