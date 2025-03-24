@@ -10,6 +10,7 @@ import com.osp.inventory_management.service.PurchaseOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,7 +45,12 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Supplier not found ", "id", orderDTO.getSupplierId()));
 
         User creator = userRepository.findById(orderDTO.getCreatedById())
-                .orElseThrow(() -> new ResourceNotFoundException("Supplier not found ","id", orderDTO.getCreatedById()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found ","id", orderDTO.getCreatedById()));
+
+        // Set order date nếu DTO không truyền vào
+        if (orderDTO.getOrderDate() == null) {
+            orderDTO.setOrderDate(LocalDateTime.now());
+        }
 
         PurchaseOrder order = PurchaseOrderMapper.toEntity(orderDTO, supplier, creator, null);
         order.setStatus(PurchaseOrder.OrderStatus.PENDING);
@@ -55,7 +61,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
         // Lưu chi tiết đơn hàng
         List<PurchaseOrderDetail> details = orderDTO.getDetails().stream().map(detailDTO -> {
             Product product = productRepository.findById(detailDTO.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product not found: ", "id", detailDTO.getProductId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found", "id", detailDTO.getProductId()));
+
+            // Nếu receivedDate null → set là thời điểm hiện tại
+            if (detailDTO.getReceivedDate() == null) {
+                detailDTO.setReceivedDate(LocalDateTime.now());
+            }
+
             return PurchaseOrderDetailMapper.toEntity(detailDTO, savedOrder, product);
         }).collect(Collectors.toList());
 
@@ -64,6 +76,7 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 
         return savedOrder;
     }
+
 
     @Override
     public void approveOrder(Long orderId, Long approverId) {
