@@ -1,7 +1,8 @@
 package com.osp.inventory_management.service.impl;
 
-import com.osp.inventory_management.entity.Category;
-import com.osp.inventory_management.entity.Product;
+import com.osp.inventory_management.model.Category;
+import com.osp.inventory_management.model.Product;
+import com.osp.inventory_management.exception.ResourceNotFoundException;
 import com.osp.inventory_management.payload.ProductDTO;
 import com.osp.inventory_management.repository.CategoryRepository;
 import com.osp.inventory_management.repository.ProductRepository;
@@ -31,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
         Category category = categoryRepository.findById(productDTO.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", productDTO.getCategoryId()));
 
         Product product = new Product();
         product.setId(null); // đảm bảo là persist chứ không merge
@@ -59,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO updateProduct(String hashedId, ProductDTO productDTO) {
         Long realId = decodeId(hashedId); // Chỉ gọi trong service
         Product existingProduct = productRepository.findById(realId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", realId));
 
         existingProduct.setName(productDTO.getName());
         existingProduct.setDescription(productDTO.getDescription());
@@ -69,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (productDTO.getCategoryId() != null) {
             Category category = categoryRepository.findById(productDTO.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category", "id", productDTO.getCategoryId()));
             existingProduct.setCategory(category);
         }
 
@@ -84,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(String hashedId) {
         Long realId = decodeId(hashedId); // Chỉ gọi trong service
         Product product = productRepository.findById(realId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", realId));
         productRepository.delete(product);
     }
 
@@ -109,7 +110,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO getProductByHashedId(String hashedId) {
         Long realId = decodeId(hashedId);
         Product product = productRepository.findById(realId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", realId));
 
         return new ProductDTO(
                 encodeId(product.getId()), // Trả về hashedId

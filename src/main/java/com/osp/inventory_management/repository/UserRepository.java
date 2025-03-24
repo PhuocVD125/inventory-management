@@ -1,4 +1,7 @@
 package com.osp.inventory_management.repository;
 
-public interface UserRepository {
+import com.osp.inventory_management.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, Long> {
 }

@@ -1,9 +1,7 @@
-package com.osp.inventory_management.entity;
+package com.osp.inventory_management.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.Set;
 
 @Getter
 @Setter
