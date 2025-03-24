@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Purchase Orders</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f9fb;
+            padding: 30px;
+        }
+
+        a {
+            display: inline-block;
+            margin: 0 40px 40px 60px;
+            padding: 10px 20px;
+            background-color: #1976d2;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 90%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        th, td {
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f6fc;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .not-approved {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h2>All Purchase Orders</h2>
+
+<div class="nav-buttons">
+    <a href="/purchase-orders/create"> Create New Order</a>
+    <a href="/purchase-orders/approve"> Approve Order</a>
+</div>
+
+<table id="orderTable">
+    <thead>
+    <tr>
+        <th>Order ID</th>
+        <th>Supplier ID</th>
+        <th>Created By</th>
+        <th>Approved By</th>
+        <th>Status</th>
+        <th>Number of Items</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    window.onload = function () {
+        fetch('/api/purchase-orders')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#orderTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(order => {
+                    const approved = order.approvedById ? order.approvedById : '<span class="not-approved">Not approved</span>';
+                    const row = `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.supplierId}</td>
+                            <td>${order.createdById}</td>
+                            <td>${approved}</td>
+                            <td>${order.status}</td>
+                            <td>${order.details.length}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(error => {
+                alert("Failed to load orders: " + error.message);
+            });
+    };
+</script>
+</body>
+</html>

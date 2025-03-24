@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Purchase Order</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .product-item {
+            margin-top: 15px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            width: 100%;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #result.success {
+            color: green;
+        }
+
+        #result.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Create New Purchase Order</h2>
+
+    <label for="supplierId">Supplier ID:</label>
+    <input type="number" id="supplierId" required>
+
+    <label for="createdById">Created By (User ID):</label>
+    <input type="number" id="createdById" required>
+
+    <div id="productList">
+        <h4>Product Items</h4>
+        <div class="product-item">
+            <label>Product ID:</label>
+            <input type="number" class="productId" required>
+            <label>Quantity:</label>
+            <input type="number" class="quantity" required>
+        </div>
+    </div>
+
+    <button type="button" onclick="addProductItem()">+ Add Another Product</button>
+    <button onclick="createOrder()">Create Order</button>
+
+    <p id="result"></p>
+</div>
+
+<script>
+    let productIndex = 1;
+
+    function addProductItem() {
+        const container = document.getElementById("productList");
+        const div = document.createElement("div");
+        div.className = "product-item";
+        div.innerHTML = `
+            <label>Product ID:</label>
+            <input type="number" class="productId" required>
+            <label>Quantity:</label>
+            <input type="number" class="quantity" required>
+        `;
+        container.appendChild(div);
+        productIndex++;
+    }
+
+    function createOrder() {
+        const supplierId = parseInt(document.getElementById("supplierId").value);
+        const createdById = parseInt(document.getElementById("createdById").value);
+
+        const productItems = [];
+        const productDivs = document.querySelectorAll(".product-item");
+
+        productDivs.forEach(div => {
+            const productId = parseInt(div.querySelector(".productId").value);
+            const quantity = parseInt(div.querySelector(".quantity").value);
+            productItems.push({ productId, quantity });
+        });
+
+        const orderData = {
+            supplierId,
+            createdById,
+            details: productItems
+        };
+
+        fetch("/api/purchase-orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => {
+            const result = document.getElementById("result");
+            if (response.ok) {
+                result.innerText = " Order created successfully!";
+                result.className = "success";
+            } else {
+                return response.text().then(msg => {
+                    throw new Error(msg);
+                });
+            }
+        })
+        .catch(error => {
+            const result = document.getElementById("result");
+            result.innerText = " Error: " + error.message;
+            result.className = "error";
+        });
+    }
+</script>
+</body>
+</html>
